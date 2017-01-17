@@ -1,7 +1,6 @@
 package com.springerNautre.watermark.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.Optional;

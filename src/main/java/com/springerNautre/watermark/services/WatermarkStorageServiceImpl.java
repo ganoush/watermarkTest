@@ -1,6 +1,5 @@
 package com.springerNautre.watermark.services;
 
-import com.springerNautre.watermark.dto.Content;
 import com.springerNautre.watermark.dto.Document;
 import com.springerNautre.watermark.dto.DocumentStore;
 import com.springerNautre.watermark.dto.JobStatus;
