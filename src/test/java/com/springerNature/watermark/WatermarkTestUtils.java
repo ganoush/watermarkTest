@@ -1,7 +1,13 @@
 package com.springerNature.watermark;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springerNautre.watermark.dto.Content;
 import com.springerNautre.watermark.dto.Document;
+import com.springerNautre.watermark.dto.DocumentStore;
+import com.springerNautre.watermark.dto.JobStatus;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by ganeshnagarajan on 1/16/17.
@@ -30,4 +36,18 @@ public class WatermarkTestUtils {
         return document;
     }
 
+    public static Map initializeDcouments(){
+        ConcurrentHashMap<Long, DocumentStore> map = new ConcurrentHashMap();
+        DocumentStore store = new DocumentStore();
+        Document doc = new Document();
+        doc.setTitle("Tell me Your Dreams");
+        doc.setTopic("Fiction");
+        doc.setAuthor("Sidney Sheldon");
+        doc.setContent(Content.BOOK);
+        store.setDocument(doc);
+        store.setTicket(1000L);
+        store.setJobStatus(JobStatus.FINISHED);
+        map.put(1000L,store);
+        return map;
+    }
 }

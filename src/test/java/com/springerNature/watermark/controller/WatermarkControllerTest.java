@@ -1,9 +1,9 @@
-package com.springerNature.watermark;
+package com.springerNature.watermark.controller;
 
+import com.springerNature.watermark.WatermarkTestUtils;
 import com.springerNautre.watermark.WatermarkApplication;
-import com.springerNautre.watermark.dto.Document;
-import com.springerNautre.watermark.dto.JobStatus;
 import com.springerNautre.watermark.services.WatermarkService;
+import com.springerNautre.watermark.services.WatermarkStorageServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,14 +17,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Set;
+
 import static com.springerNature.watermark.WatermarkTestUtils.asJsonString;
+import static com.springerNautre.watermark.dto.JobStatus.FINISHED;
 import static com.springerNautre.watermark.dto.JobStatus.NOT_FOUND;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -39,17 +43,21 @@ public class WatermarkControllerTest {
 
     private MockMvc mockMvc;
 
-    @Mock
-    @Autowired
-    private WatermarkService watermarkService;
-
     @Before
-    public void setUp() {
+    public void setUp() throws IllegalAccessException {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        //Preload with one document
+        final Set<Field> fields = org.powermock.reflect.Whitebox.getAllStaticFields(WatermarkStorageServiceImpl.class);
+        for (final Field field : fields) {
+            if (Map.class.equals(field.getType())) {
+                field.setAccessible(true);
+                field.set(WatermarkStorageServiceImpl.class, WatermarkTestUtils.initializeDcouments());
+            }
+        }
     }
 
     @Test
-    public void testForDocumentSubmissionWithNoTitle() throws Exception {
+    public void shouldFailForDocumentSubmissionWithNoTitle() throws Exception {
         this.mockMvc.perform(post("/api/submit").contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(WatermarkTestUtils.getDocumentForSubmissionNoTitle())))
                 .andDo(print())
@@ -58,7 +66,7 @@ public class WatermarkControllerTest {
     }
 
     @Test
-    public void testForDocumentSubmission() throws Exception {
+    public void shouldSubmitValidDocumentSuccessfully() throws Exception {
         this.mockMvc.perform(post("/api/submit").contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(WatermarkTestUtils.getDocumentForSubmission())))
                 .andDo(print())
@@ -67,8 +75,7 @@ public class WatermarkControllerTest {
     }
 
     @Test
-    public void testForDocumentStatusNotFound() throws Exception {
-        //when(watermarkService.getStatus(anyInt())).thenReturn(JobStatus.PENDING);
+    public void shouldReturnNotFoundForInvalidTicket() throws Exception {
         this.mockMvc.perform(get("/api/status/1").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -76,10 +83,29 @@ public class WatermarkControllerTest {
     }
 
     @Test
-    public void testForWatermarkedDocument() throws Exception {
+    public void shouldReturnJobStatusForValidTicket() throws Exception {
+        this.mockMvc.perform(get("/api/status/1000").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(asJsonString(FINISHED)));
+    }
+
+    @Test
+    public void shouldNotReturnContentForValidTicket() throws Exception {
         this.mockMvc.perform(get("/api/getDoc/1").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(""));
+    }
+
+    @Test
+    public void shouldReturnContentForValidTicket() throws Exception {
+        this.mockMvc.perform(get("/api/getDoc/1000").contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("BOOK"))
+                .andExpect(jsonPath("$.author").value("Sidney Sheldon"))
+                .andExpect(jsonPath("$.topic").value("Fiction"))
+                .andExpect(jsonPath("$.title").value("Tell me Your Dreams"));
     }
 }
