@@ -13,6 +13,8 @@ Appication end points:
   
   /api/getDoc/{ticket} - GET  =>This method returns the document, which is of type Document, if the job to set watermark is Finished
   
+  Sends HTTP 404 for contents not present
+  
   Uses the Spring @Scheduler to trigger a task that watermarks the documents. This mimics a Job
   Uses ConcurrentHashmap as datastorage instead of an actual database.
   
