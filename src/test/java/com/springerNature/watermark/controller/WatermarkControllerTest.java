@@ -23,7 +23,6 @@ import java.util.Set;
 
 import static com.springerNature.watermark.WatermarkTestUtils.asJsonString;
 import static com.springerNautre.watermark.dto.JobStatus.FINISHED;
-import static com.springerNautre.watermark.dto.JobStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -78,8 +77,8 @@ public class WatermarkControllerTest {
     public void shouldReturnNotFoundForInvalidTicket() throws Exception {
         this.mockMvc.perform(get("/api/status/1").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(asJsonString(NOT_FOUND)));
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
     }
 
     @Test
@@ -94,7 +93,7 @@ public class WatermarkControllerTest {
     public void shouldNotReturnContentForValidTicket() throws Exception {
         this.mockMvc.perform(get("/api/getDoc/1").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(content().string(""));
     }
 

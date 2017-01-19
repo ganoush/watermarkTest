@@ -43,7 +43,7 @@ public class WatermarkStorageServiceTest {
     }
 
     @Test
-    public void shouldAddDocument(){
+    public void shouldAddDocument() throws WatermarkException {
         Document doc = new Document();
         doc.setContent(Content.BOOK);
         doc.setAuthor("Test Author");
@@ -53,7 +53,7 @@ public class WatermarkStorageServiceTest {
     }
 
     @Test
-    public void shouldReturnJobStatus(){
+    public void shouldReturnJobStatus() throws WatermarkException {
         assertEquals(watermarkStorageService.getStatus(1000), JobStatus.FINISHED);
     }
 

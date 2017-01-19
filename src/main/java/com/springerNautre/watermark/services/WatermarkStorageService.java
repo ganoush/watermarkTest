@@ -9,6 +9,6 @@ import com.springerNautre.watermark.exception.WatermarkException;
  */
 public interface WatermarkStorageService {
     void addDocument(long id, Document document);
-    JobStatus getStatus(long id);
+    JobStatus getStatus(long id) throws WatermarkException ;
     Document getWatermarkedDocument(long id) throws WatermarkException;
 }

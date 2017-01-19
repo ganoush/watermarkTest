@@ -41,13 +41,13 @@ public class WatermarkStorageServiceImpl implements WatermarkStorageService{
      * @return JobStatus
      */
     @Override
-    public JobStatus getStatus(long id) {
+    public JobStatus getStatus(long id) throws WatermarkException {
         DocumentStore docStore = documents.get(id);
         Optional document = Optional.ofNullable(docStore);
         if (document.isPresent()) {
             return docStore.getJobStatus();
         } else {
-            return JobStatus.NOT_FOUND;
+            throw new WatermarkException("Job Status not found");
         }
     }
 

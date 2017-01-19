@@ -7,10 +7,13 @@ import com.springerNautre.watermark.services.WatermarkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 /**
  * Created by ganeshnagarajan on 1/12/17.
@@ -30,11 +33,11 @@ public class WatermarkController {
      * @return Long
      */
     @RequestMapping(value = "/submit",  method = RequestMethod.POST, produces = "application/json;charset=UTF-8", consumes = "application/json;charset=UTF-8")
-    public Long submitForWatermarking(@Valid @RequestBody Document doc){
+    public ResponseEntity<Long> submitForWatermarking(@Valid @RequestBody Document doc){
         log.info("Request to submit for watermark for " + doc);
         long ticket = watermarkService.addDocument(doc);
         log.info("Request submitted. Ticket generated " + ticket);
-        return ticket;
+        return new ResponseEntity<>(ticket, HttpStatus.OK);
     }
 
     /**
@@ -43,11 +46,17 @@ public class WatermarkController {
      * @return JobStatus
      */
     @RequestMapping(value = "/status/{ticket}",  method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public JobStatus getJobStatus(@PathVariable(value = "ticket") long ticket){
+    public ResponseEntity<JobStatus> getJobStatus(@PathVariable(value = "ticket") long ticket){
         log.info("Request to fetch the Job Status for the ticket " + ticket);
         JobStatus status = watermarkService.getStatus(ticket);
         log.info("Status for the id " + ticket + " : " + status);
-        return status;
+        ResponseEntity<JobStatus> response;
+        if (Optional.ofNullable(status).isPresent()){
+            response = new ResponseEntity<>(status, HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return response;
     }
 
     /**
@@ -56,10 +65,16 @@ public class WatermarkController {
      * @return Document
      */
     @RequestMapping(value = "/getDoc/{ticket}",  method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public Document getWatermarkedDocument(@PathVariable(value = "ticket") long ticket) {
+    public ResponseEntity<Document> getWatermarkedDocument(@PathVariable(value = "ticket") long ticket) {
         log.info("Request to fetch the watermarked document" + ticket);
         Document doc = watermarkService.getWatermarkedDocument(ticket);
         log.info("Watermarked document for the id " + ticket + " : " + doc);
-        return doc;
+        ResponseEntity<Document> response;
+        if (Optional.ofNullable(doc).isPresent()){
+            response = new ResponseEntity<>(doc, HttpStatus.OK);
+        } else {
+            response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return response;
     }
 }

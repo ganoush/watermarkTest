@@ -51,7 +51,13 @@ public class WatermarkServiceImpl implements WatermarkService {
      */
     @Override
     public JobStatus getStatus(long ticket) {
-        return watermarkStorageService.getStatus(ticket);
+        JobStatus status = null;
+        try {
+            status = watermarkStorageService.getStatus(ticket);
+        } catch (WatermarkException e) {
+            log.error("Job status not found for the ticket " + ticket);
+        }
+        return status;
     }
 
     /**
@@ -65,7 +71,7 @@ public class WatermarkServiceImpl implements WatermarkService {
         try {
             return watermarkStorageService.getWatermarkedDocument(ticket);
         } catch (WatermarkException ex) {
-            log.error("Unable to retrieve the watermarked document for the ticket : " + ticket + " : " + ex.getMessage());
+            log.error("Watermarked Document not found for the ticket : " + ticket + " : " + ex.getMessage());
         }
         return doc;
     }

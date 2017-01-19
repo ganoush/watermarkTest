@@ -47,10 +47,11 @@ public class WatermarkServiceTest {
     }
 
     @Test
-    public void shouldReturnJobStatus(){
+    public void shouldReturnJobStatus() throws WatermarkException {
         when(watermarkStorageService.getStatus(anyLong())).thenReturn(JobStatus.FINISHED);
         assertEquals(watermarkService.getStatus(1001),JobStatus.FINISHED);
     }
+
 
     @Test
     public void shouldReturnDocument() throws WatermarkException {
