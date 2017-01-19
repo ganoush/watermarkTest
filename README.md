@@ -2,7 +2,7 @@
 
 Watermark Application:
 
-Environment: MAC OS, Java 8, SpringBoot
+Environment: MAC OS, Java 8, SpringBoot, Junit/Mockito
 
 Application port set at 8080. This can be verriden in appplication.properties file
 
