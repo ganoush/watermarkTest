@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class WatermarkStorageServiceImpl implements WatermarkStorageService{
 
-    //Data structure to store the Documents
+    //Data structure to store the Documents. ConcurrentHashMap for concurrent access
     static Map<Long, DocumentStore> documents = new ConcurrentHashMap<>();
 
     /**

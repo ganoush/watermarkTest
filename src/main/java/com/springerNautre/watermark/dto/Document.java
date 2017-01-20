@@ -63,4 +63,8 @@ public class Document {
     public void setTopic(String topic) {
         this.topic = topic;
     }
+
+    public String toString(){
+        return "Content: " + content + ", title : " + title + ", author: " + author + ", watermark : " + watermark + ", topic : " + topic;
+    }
 }

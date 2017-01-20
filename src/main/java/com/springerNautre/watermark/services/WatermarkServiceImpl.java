@@ -35,7 +35,7 @@ public class WatermarkServiceImpl implements WatermarkService {
     @Override
     public long addDocument(Document document) {
         long ticket = count.incrementAndGet();
-        if ( Optional.ofNullable(document.getTitle()).isPresent()){
+        if (Optional.ofNullable(document.getTopic()).isPresent()){
             document.setContent(Content.BOOK);
         } else {
             document.setContent(Content.JOURNAL);
